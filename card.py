@@ -41,4 +41,4 @@ class NonPermanent(Spell, ABC):
 
 class Land(Card, ABC):
     def play(self):
-        pass
+        if 'Fetch' in self._card_types:

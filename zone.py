@@ -67,10 +67,6 @@ class ZonesFacade:
                 self.library.remove(card)
         shuffle(self.library)
 
-    def put_to_play_form_library(self, card):
-        self.battlefield.append(card)
-        self.library.remove(card)
-
     def library_add(self):
         self
 

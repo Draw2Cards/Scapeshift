@@ -2,6 +2,7 @@ from abc import ABC
 from zone import ZonesFacade
 
 
+# FLYWEIGHT
 class Card:
     def __init__(self, name, card_types, cmc, card_id, fun_play):
         self.name = name

@@ -35,5 +35,18 @@ class TestDeck(unittest.TestCase):
         self.assertEqual(library[4], "Valakut, the Molten Pinnacle")
         os.remove(file_path)
 
-    def test_add_types(self):
-        pass
+    def test_fill_types_list(self):
+        file_path = "test_deck"
+        f = open(file_path, "w")
+        f.write(
+            """2 Snow-Covered Forest
+        Flooded Grove
+    x4 Sakura-Tribe Elder""")
+        f.close()
+        deck = Deck(file_path)
+        deck.fill_types_list()
+        self.assertEqual(deck.types_dict["Snow-Covered Forest"], ["Basic", "Snow", "Land", "Forest"])
+        self.assertEqual(deck.types_dict["Flooded Grove"], ["Land"])
+        self.assertEqual(deck.types_dict["Sakura-Tribe Elder"], ["Creature", "Snake", "Shaman"])
+        self.assertEqual(len(deck.types_dict), 3)
+        os.remove(file_path)

@@ -68,12 +68,4 @@ class ZonesFacade:
         shuffle(self.library)
 
     def library_add(self):
-        self
-
-# class Zone:
-#     def __init__(self, cards):
-#         self._cards = cards
-
-
-# class Library(Zone):
-#     pass
+        raise NotImplementedError('Not Implemented Error!')

@@ -35,17 +35,14 @@ class TestDeck(unittest.TestCase):
                     )""")
         c.execute("INSERT INTO cards VALUES ('Snow-Covered Forest', 0, '', 'Basic Snow Land — Forest', '2020-03-14')")
         conn.commit()
+        conn.close()
 
-        c.execute("SELECT * FROM cards WHERE name='Snow-Covered Forest'")
-        print(c.fetchone())
-
-        card = deck.db_find("Snow-Covered Forest", "/Unit Tests/test.db")
+        card = deck.db_find("Snow-Covered Forest", "test.db")
         self.assertEqual(card, [6, "4WW", "Basic Snow Land — Forest""])"])  # TODO types to table
 
-        conn.close()
         os.remove(db_path)
 
-    def test_add_card(self):
+    def test_add_card(self):  # TODO check/use assertSame
         library = []
         deck = Deck()
         library += deck.add_card(["Snow-Covered Forest", 2])

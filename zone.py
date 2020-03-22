@@ -35,7 +35,7 @@ class ZonesFacade:
             raise ValueError('Only positive values allowed!')
         for x in range(count):
             if len(self.library) == 0:
-                raise SystemError('Attempt of drawing a card from the library with no cards! You lose the game!')
+                raise SystemError('Attempt of drawing a card from the library with no cards!')
             self.hand += self.library[:1]
             del self.library[:1]
 

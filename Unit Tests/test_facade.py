@@ -1,9 +1,20 @@
 import unittest
+from abc import ABC
 from collections import Counter
 
 from zone import ZonesFacade
 from card import Card
 from zone import Zone
+
+
+class FakeZonesFacade(ZonesFacade, ABC):
+    def __init__(self, library, hand, battlefield, graveyard, exile):
+        super().__init__(library, hand, battlefield, graveyard, exile)
+        self.library_shuffled = False
+
+    def shuffle_library(self):
+        self.library_shuffled = True
+        pass
 
 
 class TestFacade(unittest.TestCase):
@@ -17,14 +28,10 @@ class TestFacade(unittest.TestCase):
         self.assertEqual(facade.library, [])
 
     def test__draw__sufficient_library_card_number__cards_added_to_hand(self):
-        library = ["Card1", "Card2"]
-
-        facade = ZonesFacade(library, [], [], [], [])
-        two_first_items_backup = list([library[0], library[1]])
+        facade = ZonesFacade(["Card1", "Card2"], [], [], [], [])
         facade.draw(2)
 
-        result = all(elem in facade.hand for elem in two_first_items_backup)
-        self.assertTrue(result)
+        self.assertEqual(facade.hand, ["Card1", "Card2"])
 
     def test__draw__insufficient_library_card_number__method_raises_error(self):
         library = ["Card1"]
@@ -36,64 +43,84 @@ class TestFacade(unittest.TestCase):
         self.assertRaises(ValueError, facade.draw, -1)
 
     # discard
-    def test_discard(self):
-        card1 = Card("Card1", [], 0, 0, None)
-        card2 = Card("Card2", [], 0, 0, None)
-        library = []
-        hand = [card1, card2]
-        battlefield = []
-        graveyard = []
-        exile = []
+    def test__discard__card_in_hand__removed_from_hand(self):
+        card_name = "Card1"
+        facade = ZonesFacade([], [Card(card_name)], [], [], [])
+        facade.discard(card_name)
+        self.assertEqual(facade.hand, [])
 
-        facade = ZonesFacade(library, hand, battlefield, graveyard, exile)
-        facade.discard(card1.name)
-        self.assertEqual([card1], facade.graveyard)
-        self.assertEqual([card2], facade.hand)
+    def test__discard__card_in_hand__moved_to_graveyard(self):
+        card1_name = "Card1"
+        card1 = Card(card1_name)
+        facade = ZonesFacade([], [card1], [], [], [])
+        facade.discard(card1_name)
+        self.assertEqual(facade.graveyard, [card1])
 
-        facade.discard(card1.name)
-        self.assertEqual([card1], facade.graveyard)
-        self.assertEqual([card2], facade.hand)
+    # tutor_by_name
+    def test__tutor__card_in_library__moved_to_hand(self):
+        card1_name = "Card1"
+        card1 = Card(card1_name)
+        facade = ZonesFacade([card1], [], [], [], [])
+        facade.tutor_by_name(card1_name)
+        self.assertEqual(facade.hand, [card1])
 
-    def test_tutor_by_name(self):
-        card1 = Card("Card1", [], 0, 0, None)
-        card2 = Card("Card2", [], 0, 0, None)
-        library = [card1, card2]
-        hand = []
-        battlefield = []
-        graveyard = []
-        exile = []
+    def test__tutor__card_in_library__removed_from_library(self):
+        card1_name = "Card1"
+        card1 = Card(card1_name)
+        facade = ZonesFacade([card1], [], [], [], [])
+        facade.tutor_by_name(card1_name)
+        self.assertEqual(facade.library, [])
 
-        facade = ZonesFacade(library, hand, battlefield, graveyard, exile)
+    def test__tutor_by_name__using_method_to_add_to_library__rises_error(self):
+        facade = ZonesFacade([], [], [], [], [])
+        self.assertRaises(SystemError, facade.tutor_by_name, "Card1", Zone.GRAVEYARD, Zone.LIBRARY)
 
-        facade.tutor_by_name("Card3")
-        self.assertEqual([], facade.hand)
-        self.assertTrue(Counter([card1, card2]) == Counter(facade.library))
+    def test__tutor__card_in_library__shuffled_library(self):
+        card1_name = "Card1"
+        card1 = Card(card1_name)
+        facade = FakeZonesFacade([card1], [], [], [], [])
+        facade.tutor_by_name(card1_name)
+        self.assertTrue(facade.library_shuffled)
 
-        facade.tutor_by_name("Card1")
-        self.assertEqual([card1], facade.hand)
-        self.assertEqual([card2], facade.library)
+    def test__tutor__card_not_in_library__shuffled_library(self):
+        card1_name = "Card1"
+        card1 = Card(card1_name)
+        facade = FakeZonesFacade([], [], [], [], [])
+        facade.tutor_by_name(card1_name)
+        self.assertTrue(facade.library_shuffled)
 
-        facade.tutor_by_name("Card1", Zone.HAND, Zone.GRAVEYARD)
-        self.assertEqual([], facade.hand)
-        self.assertEqual([card2], facade.library)
-        self.assertEqual([card1], facade.graveyard)
+    def test__tutor__looking_in_graveyard__no_shuffling(self):
+        card1_name = "Card1"
+        card1 = Card(card1_name)
+        facade = FakeZonesFacade([], [], [], [], [])
+        facade.tutor_by_name(card1_name, Zone.GRAVEYARD, Zone.HAND)
+        self.assertFalse(facade.library_shuffled)
 
-        self.assertRaises(SystemError, facade.tutor_by_name, "Card1", Zone.HAND, Zone.LIBRARY)
+    # tutor_by_type
+    def test__tutor_by_type__card_in_library__moved_to_hand(self):
+        card1_types = ["type1", "type2"]
+        card1 = Card("", card1_types)
+        facade = ZonesFacade([card1], [], [], [], [])
+        facade.tutor_by_types(["type1", "type2"])
+        self.assertEqual(facade.hand, [card1])
 
-    def test_tutor_by_types(self):
-        card1 = Card("Card1", ["Type1"], 0, 0, None)
-        card2 = Card("Card2", ["Type1", "Type2"], 0, 0, None)
-        library = [card1, card2]
-        hand = []
-        battlefield = []
-        graveyard = []
-        exile = []
+    def test__tutor_by_type__card_in_library__removed_from_library(self):
+        card1_types = ["type1", "type2"]
+        card1 = Card("", card1_types)
+        facade = ZonesFacade([card1], [], [], [], [])
+        facade.tutor_by_types(["type1", "type2"])
+        self.assertEqual(facade.library, [])
 
-        facade = ZonesFacade(library, hand, battlefield, graveyard, exile)
-        facade.tutor_by_types(["Type1", "Type2"])
-        self.assertEqual([card1], facade.library)
-        self.assertEqual([card2], facade.hand)
+    def test__tutor_by_type__card_in_library__shuffled_library(self):
+        card1_types = ["type1", "type2"]
+        card1 = Card("", card1_types)
+        facade = FakeZonesFacade([card1], [], [], [], [])
+        facade.tutor_by_types(["type1", "type2"])
+        self.assertTrue(facade.library_shuffled)
 
-        facade.tutor_by_types(["Type1", "Type2"])
-        self.assertEqual([card1], facade.library)
-        self.assertEqual([card2], facade.hand)
+    def test__tutor_by_type__card_not_in_library__shuffled_library(self):
+        card1_types = ["type1", "type2"]
+        card1 = Card("", card1_types)
+        facade = FakeZonesFacade([], [], [], [], [])
+        facade.tutor_by_types(["type1", "type2"])
+        self.assertTrue(facade.library_shuffled)

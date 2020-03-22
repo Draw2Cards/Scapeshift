@@ -58,13 +58,16 @@ class ZonesFacade:
                 list_from.remove(card)
                 break
         if enum_from == Zone.LIBRARY:
-            shuffle(self.library)
+            self.shuffle_library()
 
     def tutor_by_types(self, types):
         for card in self.library:
             if all(elem in card.card_types for elem in types):
                 self.hand.append(card)
                 self.library.remove(card)
+        self.shuffle_library()
+
+    def shuffle_library(self):
         shuffle(self.library)
 
     def library_add(self):

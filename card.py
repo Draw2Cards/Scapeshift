@@ -4,7 +4,7 @@ from zone import ZonesFacade
 
 # FLYWEIGHT
 class Card:
-    def __init__(self, name, card_types, cmc, card_id, fun_play):
+    def __init__(self, name="", card_types="", cmc=0, card_id=0, fun_play=None):
         self.name = name
         self.card_types = card_types
         self._counters = 0

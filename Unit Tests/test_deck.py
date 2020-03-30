@@ -5,6 +5,7 @@ import os
 from deck import Deck, Finder, DBFinder, ScryfallFinder
 import sqlite3
 from datetime import date
+from database_manager import DatabaseManager
 import requests
 
 
@@ -108,3 +109,21 @@ class TestDeck(unittest.TestCase):
         resp = requests.get(url=url, params=params)
         data = resp.json()  # Check the JSON Response Content documentation below
         self.assertTrue(True)
+
+    def test_database_manager(self):
+        db_manager = DatabaseManager()
+        db_manager.init()
+
+        url = 'https://api.scryfall.com/cards/named'
+
+        params = dict(
+            fuzzy='Valakut, the Molten Pinnacle'
+        )
+        resp = requests.get(url=url, params=params)
+        data = resp.json()
+
+        db_manager.insert(data)
+
+        row = db_manager.find(data["name"])
+
+        db_manager.close()

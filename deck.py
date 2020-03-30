@@ -1,6 +1,7 @@
 import re
 import sqlite3
 from abc import ABC
+from database_manager import DatabaseManager
 
 
 class Deck:
@@ -78,7 +79,7 @@ class DBFinder(Finder, ABC):
             is_exists = True
         return is_exists
 
-    def create_table(self, able):
+    def create_table(self, table):
         self.cursor.execute("""CREATE TABLE ':table' (
                     name text,
                     cmc integer,

@@ -2,13 +2,14 @@ import re
 import sqlite3
 from abc import ABC
 from database_manager import DatabaseManager
-
+import requests
 
 class Deck:
-    deck_list = []
-    cards_dict = {}
-    gameplay_fields = []
-    not_found_cards = []
+    def __init__(self):
+        self.cards_dict = {}
+        self.deck_list = []
+        self.gameplay_fields = []
+        self.not_found_cards = []
 
     def __getitem__(self, item):
         return self.deck_list[item]
@@ -55,67 +56,35 @@ class Finder:
 
 class DBFinder(Finder, ABC):
 
-    def __init__(self, dictionary, to_find, db_path=""):
+    def __init__(self, dictionary, to_find, db_manager):
         self.dictionary = dictionary
         self.to_find = to_find
-        self.table = "cards"
-        self.conn = None
-        self.cursor = None
-        if not db_path:
-            self.db_path = "cards.db"
-        else:
-            self.db_path = db_path
+        self.db_manager = db_manager
 
     def prepare(self):
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
-        if not self.is_table_exists(self.table):
-            self.create_table(self.table)
-
-    def is_table_exists(self, table):
-        is_exists = False
-        self.cursor("SELECT count(name) FROM sqlite_master WHERE type='table' AND name=':table'", {'table', table})
-        if self.cursor.fetchone()[0] == 1:
-            is_exists = True
-        return is_exists
-
-    def create_table(self, table):
-        self.cursor.execute("""CREATE TABLE ':table' (
-                    name text,
-                    cmc integer,
-                    mana_cost text,
-                    type_line text,
-                    import_date text
-                    )""", {'table', table})
-        self.conn.commit()
+        pass
 
     def proceed(self):
         for c in self.to_find:
             if c[0] not in self.dictionary:
-                x = self.db_find(c[0])
-                if x:
-                    self.add_to_dict(c)
+                row = self.db_manager.find(c[0])
+                if row:
+                    self.dictionary[row[0]] = tuple((row[1:]))
                     self.to_find.remove(c)
             else:
                 self.to_find.remove(c)
 
-    def db_find(self, name):
-        self.cursor.execute("SELECT * FROM cards WHERE name=':name'", {'name': name})
-        card = self.cursor.fetchone()
-        return card
-
-    def add_to_dict(self, card):
-        pass
-
     def finish(self):
-        self.conn.close()
+        pass
 
 
 class ScryfallFinder(Finder, ABC):
 
-    def __init__(self, dictionary, to_find):
+    def __init__(self, dictionary, to_find, db_manager):
         self.dictionary = dictionary
         self.to_find = to_find
+        self.db_manager = db_manager
+        self.url = 'https://api.scryfall.com/cards/named'
 
     def prepare(self):
         pass
@@ -123,12 +92,20 @@ class ScryfallFinder(Finder, ABC):
     def proceed(self):
         for c in self.to_find:
             if c[0] not in self.dictionary:
-                x = self.db_find(c[0])
-                if x:
+                data = self.find(c[0])
+                if data:
+                    self.db_manager.insert(data)
                     self.add_to_dict(c)
                     self.to_find.remove(c)
             else:
                 self.to_find.remove(c)
+
+    def find(self, name):
+        params = dict(
+            fuzzy=name
+        )
+        resp = requests.get(url=self.url, params=params)
+        return resp.json()
 
     def finish(self):
         pass

@@ -125,5 +125,20 @@ class TestDeck(unittest.TestCase):
         db_manager.insert(data)
 
         row = db_manager.find(data["name"])
+        set = {row}
+
+        params = dict(
+            fuzzy='Scapeshift'
+        )
+        resp = requests.get(url=url, params=params)
+        data = resp.json()
+
+        db_manager.insert(data)
+
+        row = db_manager.find(data["name"])
+        set.add(row)
+
+        for x in set:
+            print(x[4])
 
         db_manager.close()

@@ -25,7 +25,8 @@ class DatabaseManager:
             cmc real, 
             mana_cost text, 
             type_line text, 
-            import_date text)""")
+            import_date text,
+            UNIQUE(name))""")
         self.conn.commit()
 
     def close(self):

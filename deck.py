@@ -2,11 +2,15 @@ import re
 
 
 class Deck:
-    def __init__(self):
-        self.cards_dict = {}
-        self.deck_list = []
-        self.gameplay_fields = []
+    def __init__(self, deck_path):
         self.not_found_cards = []
+        self.gameplay_fields = []
+        self.deck_list = []
+        self.cards_dict = {}
+        self.count = 0
+        file = open(deck_path)
+        for line in file:
+            self.add(line)
 
     def __getitem__(self, item):
         return self.deck_list[item]
@@ -19,15 +23,19 @@ class Deck:
         if len(m) == 4:
             if not m[1]:
                 m[1] = 1
-            self.deck_list.append([m[2], int(m[1])])  # [name, quantity]
+            quantity = int(m[1])
+            self.deck_list.append([m[2], quantity])  # [name, quantity]
+            self.count += quantity
 
-    def fill_dict(self, to_find, finders_list):
+    def fill_dict(self, finders_list):
+        to_find = self.deck_list.copy()
         for f in finders_list:
-            f.find()
-            if len(to_find) is 0:
-                break
+            self.cards_dict.update(f.find(to_find))
         if len(to_find) > 0:
             self.not_found_cards = to_find
+
+    def update_to_find(self, to_find):
+        pass
 
     def to_library(self):
         library = []

@@ -4,16 +4,30 @@ from deck import Deck
 from finders import Finder
 
 
+class FakeDeck_EmptyInit(Deck, ABC):
+    def __init__(self):
+        self.not_found_cards = []
+        self.gameplay_fields = []
+        self.deck_list = []
+        self.cards_dict = {}
+        self.count = 0
+
+
 class FakeDeck_FilledDeckListAndCardsDict(Deck, ABC):
     def __init__(self):
-        Deck.__init__(self)
+        self.not_found_cards = []
+        self.gameplay_fields = []
+        self.count = 0
         self.deck_list = [["Card", 4]]
         self.cards_dict = {"Card": [0, "", ["Type1", "Type2"]]}
 
 
 class FakeDeck_FilledDeckList(Deck, ABC):
     def __init__(self):
-        Deck.__init__(self)
+        self.not_found_cards = []
+        self.gameplay_fields = []
+        self.cards_dict = {}
+        self.count = 0
         self.deck_list = [["Card", 4]]
 
 
@@ -47,7 +61,7 @@ class TestDeck(unittest.TestCase):
         tests = ["Card", "1 Card", "x1 Card", " Card"]
         for test in tests:
             with self.subTest(test=test):
-                new_deck = Deck()
+                new_deck = FakeDeck_EmptyInit()
                 new_deck.add(test)
                 self.assertEqual(new_deck[0][0], "Card")
 
@@ -55,7 +69,7 @@ class TestDeck(unittest.TestCase):
         tests = ["Card", "1 Card", "x1 Card", " Card"]
         for test in tests:
             with self.subTest(test=test):
-                new_deck = Deck()
+                new_deck = FakeDeck_EmptyInit()
                 new_deck.add(test)
                 self.assertEqual(new_deck[0][1], 1)
 
@@ -63,7 +77,7 @@ class TestDeck(unittest.TestCase):
         tests = ["", " "]
         for test in tests:
             with self.subTest(test=test):
-                new_deck = Deck()
+                new_deck = FakeDeck_EmptyInit()
                 new_deck.add("")
                 self.assertEqual(len(new_deck), 0)
 
@@ -95,3 +109,5 @@ class TestDeck(unittest.TestCase):
 
         new_deck.fill_dict(to_find, [fake_finder])
         self.assertEqual(new_deck.not_found_cards, [])
+
+    # TODO test for update_to_find

@@ -1,7 +1,5 @@
 import unittest
 from abc import ABC
-from collections import Counter
-
 from zone import ZonesFacade
 from card import Card
 from zone import Zone

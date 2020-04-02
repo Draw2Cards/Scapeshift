@@ -1,22 +1,19 @@
-import sys
 import unittest
 from abc import ABC
-import os
-from deck import Deck, Finder, DBFinder, ScryfallFinder
-import sqlite3
-from datetime import date
-from database_manager import DatabaseManager
-import requests
+from deck import Deck
+from finders import Finder
 
 
 class FakeDeck_FilledDeckListAndCardsDict(Deck, ABC):
     def __init__(self):
+        Deck.__init__(self)
         self.deck_list = [["Card", 4]]
         self.cards_dict = {"Card": [0, "", ["Type1", "Type2"]]}
 
 
 class FakeDeck_FilledDeckList(Deck, ABC):
     def __init__(self):
+        Deck.__init__(self)
         self.deck_list = [["Card", 4]]
 
 
@@ -24,7 +21,7 @@ class NeverFinder(Finder, ABC):
     def prepare(self):
         pass
 
-    def proceed(self):
+    def find(self):
         pass
 
     def finish(self):
@@ -38,7 +35,7 @@ class AlwaysFinder(Finder, ABC):
     def prepare(self):
         pass
 
-    def proceed(self):
+    def find(self):
         self.to_find.clear()
 
     def finish(self):
@@ -98,47 +95,3 @@ class TestDeck(unittest.TestCase):
 
         new_deck.fill_dict(to_find, [fake_finder])
         self.assertEqual(new_deck.not_found_cards, [])
-
-    def test_requests(self):
-        # https://api.scryfall.com/cards/named?fuzzy=Valakut,%20the%20Molten%20Pinnacle
-        url = 'https://api.scryfall.com/cards/named'
-
-        params = dict(
-            fuzzy='Valakut, the Molten Pinnacle'
-        )
-        resp = requests.get(url=url, params=params)
-        data = resp.json()  # Check the JSON Response Content documentation below
-        self.assertTrue(True)
-
-    def test_database_manager(self):
-        db_manager = DatabaseManager()
-        db_manager.init()
-
-        url = 'https://api.scryfall.com/cards/named'
-
-        params = dict(
-            fuzzy='Valakut, the Molten Pinnacle'
-        )
-        resp = requests.get(url=url, params=params)
-        data = resp.json()
-
-        db_manager.insert(data)
-
-        row = db_manager.find(data["name"])
-        set = {row}
-
-        params = dict(
-            fuzzy='Scapeshift'
-        )
-        resp = requests.get(url=url, params=params)
-        data = resp.json()
-
-        db_manager.insert(data)
-
-        row = db_manager.find(data["name"])
-        set.add(row)
-
-        for x in set:
-            print(x[4])
-
-        db_manager.close()

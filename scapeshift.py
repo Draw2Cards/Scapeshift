@@ -1,7 +1,8 @@
 from deck import Deck
 from finders import DbFinder, ScryfallFinder
 from database_manager import DatabaseManager
-from game import Game
+from game import Game, GameState
+from player import Player
 
 
 def main():
@@ -17,7 +18,10 @@ def main():
         if not deck.not_found_cards:
             print('Card data: OK.')
             library = deck.to_library()
-            game = Game()
+            game_state = GameState()
+            player = Player()
+            game = Game(library, game_state, player)
+            game.play()
 
         else:
             print('Card data:ERROR.')

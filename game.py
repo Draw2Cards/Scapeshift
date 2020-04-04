@@ -1,7 +1,7 @@
 from enum import Enum
 from zone import ZonesManager
 from player import Player
-from permanent import Permanent
+
 
 class Outcome(Enum):
     UNRESOLVED = -1
@@ -9,27 +9,32 @@ class Outcome(Enum):
     LOSE = 1
 
 
-class Game:
-    def __init__(self, library, first, player):
-        self.zones = ZonesManager(library, [], [], [])
-        self.outcome = Outcome.UNRESOLVED
-        self.turn_counter = 0
+class GameState:
+    def __init__(self, first=True):
         self.first = first
+        self.turn_counter = 0
+        self.outcome = Outcome.UNRESOLVED
+
+
+class Game:
+    def __init__(self, library, game_state, player):
+        self.zones = ZonesManager(library, [], [], [])
+        self.game_state = GameState(game_state)
         self.player = Player(player)
 
     def play(self):
         self.preparation()
-        while self.outcome is Outcome.UNRESOLVED:
+        while self.game_state.outcome is Outcome.UNRESOLVED:
             self.turn()
 
     def preparation(self):
         self.zones.shuffle_library()
         self.zones.draw(7)
         while not self.player.hand_keep:
-            self.zones.mulligan
+            self.zones.mulligan()
 
     def turn(self):
-        self.turn_counter += 0
+        self.game_state.turn_counter += 0
         self.beginning_phase()
         self.precombat_main_phase()
         self.combat_phase()
@@ -50,8 +55,8 @@ class Game:
             c.upkeep()
 
     def draw_step(self):
-        if self.turn_counter is 1:
-            if self.first:
+        if self.game_state.turn_counter is 1:
+            if self.game_state.first:
                 return
         self.zones.draw()
 
@@ -83,3 +88,13 @@ class Game:
 
     def postcombat_main_phase(self):
         self.player.postcombat_main_phase()
+
+    def ending_phase(self):
+        self.end_step()
+        self.cleanup_step()
+
+    def end_step(self):
+        self.player.end_step()
+
+    def cleanup_step(self):
+        self.player.cleanup_step()

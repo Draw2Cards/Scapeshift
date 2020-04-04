@@ -10,7 +10,7 @@ class Zone(Enum):
     EXILE = 4
 
 
-class ZonesFacade:
+class ZonesManager:
     def __init__(self, library, hand, battlefield, graveyard, exile):  # also stack and command (and ante)
         self.library = library
         self.hand = hand

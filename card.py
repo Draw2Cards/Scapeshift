@@ -1,5 +1,5 @@
 from abc import ABC
-from zone import ZonesFacade
+from zone import ZonesManager
 
 
 # FLYWEIGHT

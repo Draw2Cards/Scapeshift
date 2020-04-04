@@ -32,28 +32,16 @@ class FakeDeck_FilledDeckList(Deck, ABC):
 
 
 class NeverFinder(Finder, ABC):
-    def prepare(self):
-        pass
-
-    def find(self):
-        pass
-
-    def finish(self):
-        pass
+    def find(self, to_find):
+        return {}
 
 
 class AlwaysFinder(Finder, ABC):
-    def __init__(self, to_find):
-        self.to_find = to_find
-
-    def prepare(self):
-        pass
-
-    def find(self):
-        self.to_find.clear()
-
-    def finish(self):
-        pass
+    def find(self, to_find):
+        dic = {}
+        for c in to_find:
+            dic[c[0]] = None
+        return dic
 
 
 class TestDeck(unittest.TestCase):
@@ -99,15 +87,32 @@ class TestDeck(unittest.TestCase):
         to_find = new_deck.deck_list.copy()
         fake_finder = NeverFinder()
 
-        new_deck.fill_dict(to_find, [fake_finder])
+        new_deck.fill_dict([fake_finder])
         self.assertEqual(new_deck.not_found_cards, [['Card', 4]])
 
     def test__fill_dict__existing_card__empty_not_found_list(self):
         new_deck = FakeDeck_FilledDeckList()
-        to_find = new_deck.deck_list.copy()
-        fake_finder = AlwaysFinder(to_find)
+        fake_finder = AlwaysFinder()
 
-        new_deck.fill_dict(to_find, [fake_finder])
+        new_deck.fill_dict([fake_finder])
         self.assertEqual(new_deck.not_found_cards, [])
 
-    # TODO test for update_to_find
+    def test__update_to_find__card_in_dict_card__deleted_from_list(self):
+        new_deck = FakeDeck_FilledDeckListAndCardsDict()
+        to_find = new_deck.deck_list.copy()
+        to_find = new_deck.update_to_find(to_find)
+        self.assertEqual(to_find, [])
+
+    def test__update_to_find__card_not_in_dict__no_changes(self):
+        new_deck = FakeDeck_EmptyInit()
+        to_find = new_deck.deck_list.copy()
+        updated = new_deck.update_to_find(to_find)
+        self.assertEqual(updated, to_find)
+
+    def test__update_to_find__partly_cards_in_dict__removed_duplicates(self):
+        card_to_find = [["Card2", 4]]
+        new_deck = FakeDeck_FilledDeckListAndCardsDict()
+        to_find = new_deck.deck_list.copy()
+        to_find += card_to_find
+        updated = new_deck.update_to_find(to_find)
+        self.assertEqual(updated, card_to_find)

@@ -57,6 +57,7 @@ class DatabaseManager:
         else:
             for row in rows:
                 print(row)
+            print("Count: {}".format(len(rows)))
 
 
 if __name__ == "__main__":

@@ -31,11 +31,15 @@ class Deck:
         to_find = self.deck_list.copy()
         for f in finders_list:
             self.cards_dict.update(f.find(to_find))
+            to_find = self.update_to_find(to_find)
+            if not to_find:
+                break
         if len(to_find) > 0:
             self.not_found_cards = to_find
 
     def update_to_find(self, to_find):
-        pass
+        updated = [x for x in to_find if x[0] not in self.cards_dict]
+        return updated
 
     def to_library(self):
         library = []

@@ -1,5 +1,6 @@
 from random import shuffle
 from enum import Enum
+from game import GameState, Outcome
 
 
 class Zone(Enum):
@@ -11,12 +12,13 @@ class Zone(Enum):
 
 
 class ZonesManager:
-    def __init__(self, library, hand, battlefield, graveyard, exile):  # also stack and command (and ante)
+    def __init__(self, library, hand, battlefield, graveyard, exile, game_state):  # also stack and command (and ante)
         self.library = library
         self.hand = hand
         self.battlefield = battlefield
         self.graveyard = graveyard
         self.exile = exile
+        self.game_state = GameState(game_state)
 
     def _set_zone(self, enum):
         if enum == Zone.LIBRARY:
@@ -35,7 +37,7 @@ class ZonesManager:
             raise ValueError('Only positive values allowed!')
         for x in range(count):
             if len(self.library) == 0:
-                raise SystemError('Attempt of drawing a card from the library with no cards!')
+                self.game_state.outcome = Outcome.LOSE
             self.hand += self.library[:1]
             del self.library[:1]
 

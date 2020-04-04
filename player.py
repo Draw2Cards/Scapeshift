@@ -1,5 +1,5 @@
 import random
-from zone import ZonesManager
+#from zone import ZonesManager
 
 
 class Player:

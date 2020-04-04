@@ -1,5 +1,5 @@
 from enum import Enum
-from zone import ZonesManager
+#from zone import ZonesManager
 from player import Player
 
 
@@ -18,8 +18,8 @@ class GameState:
 
 class Game:
     def __init__(self, library, game_state, player):
-        self.zones = ZonesManager(library, [], [], [])
         self.game_state = GameState(game_state)
+        self.zones = ZonesManager(library, [], [], [], game_state)
         self.player = Player(player)
 
     def play(self):

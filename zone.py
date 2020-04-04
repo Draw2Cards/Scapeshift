@@ -72,3 +72,7 @@ class ZonesManager:
 
     def library_add(self):
         raise NotImplementedError('Not Implemented Error!')
+
+    def mulligan(self):
+        # TODO
+        pass

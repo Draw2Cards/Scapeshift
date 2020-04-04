@@ -1,7 +1,7 @@
 from deck import Deck
 from finders import DbFinder, ScryfallFinder
 from database_manager import DatabaseManager
-from zone import ZonesManager
+from game import Game
 
 
 def main():
@@ -17,11 +17,7 @@ def main():
         if not deck.not_found_cards:
             print('Card data: OK.')
             library = deck.to_library()
-            hand = []
-            battlefield = []
-            graveyard = []
-            exile = []
-            zones = ZonesManager(library, hand, battlefield, graveyard, exile)
+            game = Game()
 
         else:
             print('Card data:ERROR.')

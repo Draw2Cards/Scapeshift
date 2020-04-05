@@ -4,7 +4,7 @@ from datetime import date
 
 class DatabaseManager:
     def __init__(self):
-        self.db_path = "cards.db"
+        self.db_path = "../cards.db"
         self.conn = None
         self.cursor = None
         self.__init = False

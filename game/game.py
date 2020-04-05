@@ -1,26 +1,11 @@
-from enum import Enum
-#from zone import ZonesManager
-from player import Player
-
-
-class Outcome(Enum):
-    UNRESOLVED = -1
-    WIN = 0
-    LOSE = 1
-
-
-class GameState:
-    def __init__(self, first=True):
-        self.first = first
-        self.turn_counter = 0
-        self.outcome = Outcome.UNRESOLVED
+from game.game_state import GameState, Outcome
 
 
 class Game:
-    def __init__(self, library, game_state, player):
-        self.game_state = GameState(game_state)
-        self.zones = ZonesManager(library, [], [], [], game_state)
-        self.player = Player(player)
+    def __init__(self, zones, game_state, player):
+        self.game_state = game_state
+        self.zones = zones
+        self.player = player
 
     def play(self):
         self.preparation()
@@ -34,7 +19,7 @@ class Game:
             self.zones.mulligan()
 
     def turn(self):
-        self.game_state.turn_counter += 0
+        self.game_state.turn_counter += 1
         self.beginning_phase()
         self.precombat_main_phase()
         self.combat_phase()

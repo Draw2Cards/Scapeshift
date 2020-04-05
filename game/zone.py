@@ -1,6 +1,6 @@
 from random import shuffle
 from enum import Enum
-from game import GameState, Outcome
+from game.game_state import Outcome
 
 
 class Zone(Enum):
@@ -12,13 +12,14 @@ class Zone(Enum):
 
 
 class ZonesManager:
-    def __init__(self, library, hand, battlefield, graveyard, exile, game_state):  # also stack and command (and ante)
+    def __init__(self, library, hand, battlefield, graveyard, exile, stack, game_state):  # also command (and ante)
         self.library = library
         self.hand = hand
         self.battlefield = battlefield
         self.graveyard = graveyard
         self.exile = exile
-        self.game_state = GameState(game_state)
+        self.stack = stack
+        self.game_state = game_state
 
     def _set_zone(self, enum):
         if enum == Zone.LIBRARY:

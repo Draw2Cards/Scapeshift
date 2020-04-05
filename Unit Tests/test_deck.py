@@ -1,7 +1,7 @@
 import unittest
 from abc import ABC
-from deck import Deck
-from finders import Finder
+from setup.deck import Deck
+from setup.finders import Finder
 
 
 class FakeDeck_EmptyInit(Deck, ABC):
@@ -84,7 +84,6 @@ class TestDeck(unittest.TestCase):
 
     def test__fill_dict__not_existing_card__card_returned_in_not_found_items(self):
         new_deck = FakeDeck_FilledDeckList()
-        to_find = new_deck.deck_list.copy()
         fake_finder = NeverFinder()
 
         new_deck.fill_dict([fake_finder])

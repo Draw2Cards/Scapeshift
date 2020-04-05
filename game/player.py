@@ -1,12 +1,11 @@
 import random
-#from zone import ZonesManager
 
 
 class Player:
     def __init__(self, zone):
         self.hand_keep = True
         self.card_limit = 7
-        self.zones = ZonesManager(zone)
+        self.zones = zone
 
     def precombat_main_phase(self):
         pass
@@ -36,4 +35,4 @@ class Player:
     def cleanup_step(self):
         while len(self.zones.hand) > self.card_limit:
             to_delete = random.choice(self.zones.hand)
-            self.zones.hand.romove(to_delete)
+            self.zones.hand.remove(to_delete)

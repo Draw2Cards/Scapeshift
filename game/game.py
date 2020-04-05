@@ -1,4 +1,4 @@
-from game.game_state import GameState, Outcome
+from game.game_state import Outcome
 
 
 class Game:

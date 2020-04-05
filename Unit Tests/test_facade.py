@@ -2,7 +2,7 @@ import unittest
 from abc import ABC
 from game.zone import ZonesManager, Zone
 from cards.card import Card
-from game.game import GameState, Outcome
+from game.game_state import GameState, Outcome
 
 
 class FakeShufflingZonesManager(ZonesManager, ABC):

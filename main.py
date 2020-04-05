@@ -20,13 +20,14 @@ def main():
             print('Card data: OK.')
             library = deck.to_library()
             game_state = GameState()
-            zones = ZonesManager(library, [], [], [], [], game_state)
+            zones = ZonesManager(library, [], [], [], [], [], game_state)
             player = Player(zones)
             game = Game(zones, game_state, player)
             game.play()
             print(game_state.outcome)
+            print(game_state.turn_counter)
         else:
-            print('Card data:ERROR.')
+            print('Card data: ERROR.')
             print('Card not found:')
             for card in deck.not_found_cards:
                 print(card)

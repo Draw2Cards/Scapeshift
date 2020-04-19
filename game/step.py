@@ -1,3 +1,6 @@
+from abc import ABC
+
+
 class Step:
     def __int__(self, zones, game_state, player):
         self.zones = zones
@@ -38,37 +41,51 @@ class StepDraw(Step):
         self.zones.draw()
 
 
-class StepCombatBeginning(Step):
+class StepCombat(Step):
+    def __init__(self, player):
+        self.player = player
+
+    def run(self):
+        raise NotImplementedError('Not Implemented Error!')
+
+
+class StepCombatBeginning(StepCombat):
     def run(self):
         self.player.beginning_of_combat_step()
 
 
-class StepDeclareAttackers(Step):
+class StepDeclareAttackers(StepCombat):
     def run(self):
         # returns number of attacking creatures
         return self.player.declare_attackers_step()
 
 
-class StepDeclareBlockers(Step):
+class StepDeclareBlockers(StepCombat):
     def run(self):
         self.player.declare_blockers_step()
 
 
-class StepCombatDamage(Step):
+class StepCombatDamage(StepCombat):
     def run(self):
         self.player.combat_damage_step()
 
 
-class StepCombatEnd(Step):
+class StepCombatEnd(StepCombat):
     def run(self):
         self.player.end_of_combat_step()
 
 
 class StepEnd(Step):
+    def __init__(self, player):
+        self.player = player
+
     def run(self):
         self.player.end_step()
 
 
 class StepCleanup(Step):
+    def __init__(self, player):
+        self.player = player
+
     def run(self):
         self.player.cleanup_step()

@@ -1,5 +1,5 @@
 from game.game_state import Outcome
-from game.phase import PhaseCombat, PhaseBeginning, PhaseEnding, PhasePrecombatMain, PhasePostcombatMain
+from game.phase import PhaseBeginning, PhaseEnding, PhasePrecombatMain, PhasePostcombatMain, PhaseCombat
 
 
 class Game:
@@ -7,6 +7,7 @@ class Game:
         self.game_state = game_state
         self.zones = zones
         self.player = player
+
         self.phases = [PhaseBeginning(zones, game_state, player),
                        PhasePrecombatMain(zones, game_state, player),
                        PhaseCombat(zones, game_state, player),
@@ -21,6 +22,7 @@ class Game:
     def preparation(self):
         self.zones.shuffle_library()
         self.zones.draw(7)
+        self.game_state.turn_counter = 0
         while not self.player.hand_keep:
             self.zones.mulligan()
 

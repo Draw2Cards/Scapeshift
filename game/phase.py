@@ -1,3 +1,5 @@
+from abc import ABC
+
 from game.game_state import Outcome
 from game.step import StepCleanup, StepCombatBeginning, StepCombatDamage, StepCombatEnd, StepDeclareAttackers, \
     StepDeclareBlockers, StepDraw, StepEnd, StepUntap, StepUpkeep
@@ -14,9 +16,11 @@ class Phase:
 
 
 class PhaseBeginning(Phase):
-    def __int__(self, zones, game_state, player):
+    def __init__(self, zones, game_state, player):
         super().__init__(zones, game_state, player)
-        self.steps = [StepUntap(zones), StepUpkeep(), StepDraw()]
+        self.steps = [StepUntap(self.zones.battlefield),
+                      StepUpkeep(self.zones.battlefield),
+                      StepDraw(self.zones, self.game_state)]
 
     def run(self):
         for s in self.steps:
@@ -31,13 +35,13 @@ class PhasePrecombatMain(Phase):
 
 
 class PhaseCombat(Phase):
-    def __int__(self, zones, game_state, player):
+    def __init__(self, zones, game_state, player):
         super().__init__(zones, game_state, player)
-        self.steps = [StepCombatBeginning(),
-                      StepDeclareAttackers(),
-                      StepDeclareBlockers(),
-                      StepCombatDamage(),
-                      StepCombatEnd()]
+        self.steps = [StepCombatBeginning(player),
+                      StepDeclareAttackers(player),
+                      StepDeclareBlockers(player),
+                      StepCombatDamage(player),
+                      StepCombatEnd(player)]
 
     def run(self):
         for s in self.steps:
@@ -52,9 +56,9 @@ class PhasePostcombatMain(Phase):
 
 
 class PhaseEnding(Phase):
-    def __int__(self, zones, game_state, player):
+    def __init__(self, zones, game_state, player):
         super().__init__(zones, game_state, player)
-        self.steps = [StepEnd(), StepCleanup()]
+        self.steps = [StepEnd(player), StepCleanup(player)]
 
     def run(self):
         for s in self.steps:

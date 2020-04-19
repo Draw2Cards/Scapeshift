@@ -1,7 +1,8 @@
+from game.game_state import GameState
 from setup.deck import Deck
 from setup.finders import DbFinder, ScryfallFinder
 from setup.database_manager import DatabaseManager
-from game.game import Game, GameState
+from game.game import Game
 from game.player import Player
 from game.zone import ZonesManager
 
@@ -23,9 +24,11 @@ def main():
             zones = ZonesManager(library, [], [], [], [], [], game_state)
             player = Player(zones)
             game = Game(zones, game_state, player)
+            print(" Game: START")
             game.play()
-            print(game_state.outcome)
-            print(game_state.turn_counter)
+            print(" Game: END")
+            print("Outcome: {}".format(game_state.outcome.name))
+            print("Turn: {}".format(game_state.turn_counter))
         else:
             print('Card data: ERROR.')
             print('Card not found:')

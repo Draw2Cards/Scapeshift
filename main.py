@@ -3,7 +3,7 @@ from setup.deck import Deck
 from setup.finders import DbFinder, ScryfallFinder
 from setup.database_manager import DatabaseManager
 from game.game import Game
-from game.player import Player
+from game.player import Player, RugPlayer
 from game.zone import ZonesManager
 
 
@@ -22,7 +22,8 @@ def main():
             library = deck.to_library()
             game_state = GameState()
             zones = ZonesManager(library, [], [], [], [], [], game_state)
-            player = Player(zones)
+            # player = Player(zones, game_state)
+            player = RugPlayer(zones, game_state)
             game = Game(zones, game_state, player)
             print(" Game: START")
             game.play()

@@ -1,5 +1,5 @@
 class Permanent:
-    def __init__(self, card ):
+    def __init__(self, card):
         self.card = card
         self.untapped = True
 

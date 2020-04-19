@@ -16,7 +16,7 @@ class DbFinder(Finder, ABC):
         for c in to_find:
             row = self.db_manager.find(c[0])
             if row:
-                cards_dict[row[0]] = tuple((row[1:-1]))
+                cards_dict[row[0]] = tuple((row[0:-1]))
         return cards_dict
 
 
@@ -32,7 +32,7 @@ class ScryfallFinder(Finder, ABC):
             data = self.find_card(c[0])
             obj = data["object"]
             if obj == "card":
-                cards_dict[data["name"]] = (data["cmc"], data["mana_cost"], data["type_line"])
+                cards_dict[data["name"]] = (data["name"], data["cmc"], data["mana_cost"], data["type_line"])
                 self.db_manager.insert(data)
             elif obj == "error":
                 self.errors_details.add(data["details"])

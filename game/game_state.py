@@ -12,3 +12,4 @@ class GameState:
         self.first = first
         self.turn_counter = 0
         self.outcome = Outcome.UNRESOLVED
+        self.land_played = False

@@ -39,6 +39,7 @@ class ZonesManager:
         for x in range(count):
             if len(self.library) == 0:
                 self.game_state.outcome = Outcome.LOSE
+                break
             self.hand += self.library[:1]
             del self.library[:1]
 

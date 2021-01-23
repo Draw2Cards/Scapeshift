@@ -1,7 +1,5 @@
 from random import shuffle
 from enum import Enum
-
-from cards.card import Card
 from cards.permanent import Permanent
 from game.game_state import Outcome
 
@@ -61,7 +59,7 @@ class ZonesManager:
         list_to = self._set_zone(enum_to)
 
         for card in list_from:
-            if name == card[0]:
+            if name == card.name:
                 if enum_to == Zone.BATTLEFIELD:  # TODO IF enum_to is Zone.BATTLEFIELD convert to Permanent
                     list_to.append(Permanent(card))
                 else:

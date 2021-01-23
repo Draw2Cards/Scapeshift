@@ -67,25 +67,23 @@ class TestFacade(unittest.TestCase):
 
     # discard
     def test__discard__card_in_hand__removed_from_hand(self):
-        card_name = "Card1"
+        card1 = Card("Card1")
         game_state = GameState()
-        facade = SimpleZoneDiscard([], [Card(card_name)])
-        facade.discard(card_name)
+        facade = SimpleZoneDiscard([], [card1])
+        facade.discard(card1)
         self.assertEqual(facade.hand, [])
 
     def test__discard__card_in_hand__moved_to_graveyard(self):
-        card1_name = "Card1"
-        card1 = Card(card1_name)
+        card1 = Card("Card1")
         facade = SimpleZoneDiscard([], [card1])
-        facade.discard(card1_name)
+        facade.discard(card1)
         self.assertEqual(facade.graveyard, [card1])
 
     # tutor_by_name
     def test__tutor__card_in_library__moved_to_hand(self):
-        card1_name = "Card1"
-        card1 = Card(card1_name)
+        card1 = Card("Card1")
         facade = SimpleZoneTutor([card1], [], [], [], [])
-        facade.tutor_by_name(card1_name)
+        facade.tutor_by_name(card1.name)
         self.assertEqual(facade.hand, [card1])
 
     def test__tutor__card_in_library__removed_from_library(self):

@@ -1,7 +1,6 @@
 import random
 from enum import Enum
-
-from game.zone import Zone
+from logger import Logger
 
 
 class Player:
@@ -38,7 +37,7 @@ class Player:
 
     def cleanup_step(self):
         while len(self.zones.hand.cards) > self.card_limit:
-            to_delete = random.choice(self.zones.hand)
+            to_delete = random.choice(self.zones.hand.cards)
             self.zones.discard(to_delete)
 
 
@@ -66,7 +65,8 @@ class RugPlayer(Player):
     def play_land(self):
         land = self.pick_land()
         if land:
-            self.zones.play_land(self.pick_land())
+            self.zones.play_land(land)
+            Logger.card_played(land)
 
     def pick_land(self):
         priority = {
@@ -86,7 +86,7 @@ class RugPlayer(Player):
             x = priority.get(c[0])
             if x:
                 if x < top_card[1]:
-                    top_card = [c[0], x]
+                    top_card = [c, x]
 
         return top_card[0]
 

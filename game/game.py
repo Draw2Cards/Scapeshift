@@ -22,13 +22,16 @@ class Game:
     def preparation(self):
         self.zones.shuffle_library()
         starting_hand = self.zones.draw(7)
-        Logger.starting_hand(starting_hand)
+        Logger.hand(starting_hand)
         self.game_state.turn_counter = 0
         while not self.player.hand_keep:
             self.zones.mulligan()
 
     def turn(self):
+        self.game_state.land_played = False
         self.game_state.turn_counter += 1
+        Logger.turn_start(self.game_state.turn_counter)
+        Logger.hand(self.zones.hand.cards)
         for p in self.phases:
             p.run()
             if self.game_state.outcome != Outcome.UNRESOLVED:

@@ -7,7 +7,7 @@ from game.phase import PhaseBeginning, Phase, PhasePrecombatMain
 from game.step import StepUntap, StepDraw
 from game.zone import ZonesManager
 from zones.battlefield import Battlefield
-
+from zones.hand import Hand
 
 class OnlyUntap(Game):
     def __init__(self, zones, game_state):
@@ -61,6 +61,7 @@ class DrawZone(ZonesManager, ABC):
     def __init__(self, game_state):
         self.library = []
         self.game_state = game_state
+        self.hand = Hand()
 
 
 class TestGame(unittest.TestCase):

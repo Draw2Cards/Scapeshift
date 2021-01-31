@@ -47,11 +47,31 @@ class ZonesManager:
         return result
 
     def discard(self, card):
-        for c in self.hand:
+        for c in self.hand.cards:
             if card == c:
                 self.graveyard.append(card)
-                self.hand.remove(card)
+                self.hand.cards.remove(card)
                 break
+
+    def move_card(self, card, enum_from=Zone.LIBRARY, enum_to=Zone.HAND):
+        list_from = self._set_zone(enum_from)
+        if enum_to == Zone.LIBRARY:
+            raise SystemError('Using this method to add card to the library is blocked! Use ''library_add'' ')
+        list_to = self._set_zone(enum_to)
+
+        for c in list_from:
+            if card[0] == c[0]:
+                if enum_to == Zone.BATTLEFIELD:  # TODO IF enum_to is Zone.BATTLEFIELD convert to Permanent
+                    list_to.append(Permanent(card))
+                else:
+                    list_to.append(card)
+                if enum_from == Zone.BATTLEFIELD: # TODO IF enum_to is Zone.BATTLEFIELD convert to Card
+                    list_to.append(card.card)
+                else:
+                    list_from.remove(card)
+                break
+        if enum_from == Zone.LIBRARY:
+            self.shuffle_library()
 
     # TODO OUTDATED
     def tutor_by_name(self, name, enum_from=Zone.LIBRARY, enum_to=Zone.HAND):
@@ -74,9 +94,10 @@ class ZonesManager:
         if enum_from == Zone.LIBRARY:
             self.shuffle_library()
 
-    def play_land(self, land_name):
-        if land_name:
-            self.tutor_by_name(land_name, Zone.HAND, Zone.BATTLEFIELD)
+    def play_land(self, land):
+        if land:
+            self.move_card(land, Zone.HAND, Zone.BATTLEFIELD)
+            self.game_state.land_played = True
 
     # TODO OUTDATED
     def tutor_by_types(self, types):

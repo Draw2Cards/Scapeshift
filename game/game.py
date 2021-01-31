@@ -1,6 +1,6 @@
 from game.game_state import Outcome
 from game.phase import PhaseBeginning, PhaseEnding, PhasePrecombatMain, PhasePostcombatMain, PhaseCombat
-
+from logger import Logger
 
 class Game:
     def __init__(self, zones, game_state, player):
@@ -21,7 +21,8 @@ class Game:
 
     def preparation(self):
         self.zones.shuffle_library()
-        self.zones.draw(7)
+        starting_hand = self.zones.draw(7)
+        Logger.starting_hand(starting_hand)
         self.game_state.turn_counter = 0
         while not self.player.hand_keep:
             self.zones.mulligan()

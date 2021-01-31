@@ -3,7 +3,6 @@ from enum import Enum
 from cards.permanent import Permanent
 from game.game_state import Outcome
 
-
 class Zone(Enum):
     LIBRARY = 0
     HAND = 1
@@ -26,23 +25,26 @@ class ZonesManager:
         if enum == Zone.LIBRARY:
             return self.library
         elif enum == Zone.HAND:
-            return self.hand
+            return self.hand.cards
         elif enum == Zone.BATTLEFIELD:
-            return self.battlefield
+            return self.battlefield.permanents
         elif enum == Zone.GRAVEYARD:
             return self.graveyard
         else:
             return self.exile
 
     def draw(self, count=1):
+        result = []
         if count < 1:
             raise ValueError('Only positive values allowed!')
         for x in range(count):
             if len(self.library) == 0:
                 self.game_state.outcome = Outcome.LOSE
                 break
-            self.hand += self.library[:1]
+            self.hand.cards += self.library[:1]
+            result += self.library[:1]
             del self.library[:1]
+        return result
 
     def discard(self, card):
         for c in self.hand:
@@ -93,3 +95,6 @@ class ZonesManager:
     def mulligan(self):
         # TODO
         pass
+
+    def find_spells_ready_to_cast(self):
+        return self.hand.find_spells_with_cmc_leq(self.battlefield.count_open_mana())

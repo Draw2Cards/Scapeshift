@@ -1,4 +1,5 @@
 from abc import ABC
+from logger import Logger
 
 
 class Step:
@@ -16,7 +17,7 @@ class StepUntap(Step):
         self.battlefield = battlefield
 
     def run(self):
-        for c in self.battlefield:
+        for c in self.battlefield.permanents:
             c.untap()
 
 
@@ -25,7 +26,7 @@ class StepUpkeep(Step):
         self.battlefield = battlefield
 
     def run(self):
-        for c in self.battlefield:
+        for c in self.battlefield.permanents:
             c.upkeep()
 
 
@@ -35,10 +36,11 @@ class StepDraw(Step):
         self.game_state = game_state
 
     def run(self):
+        card = []
         if self.game_state.turn_counter is 1:
-            if self.game_state.first:
-                return
-        self.zones.draw()
+            if not self.game_state.first:
+                card = self.zones.draw()
+        Logger.draw_step(card)
 
 
 class StepCombat(Step):

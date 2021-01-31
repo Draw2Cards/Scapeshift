@@ -37,7 +37,7 @@ class Player:
         pass
 
     def cleanup_step(self):
-        while len(self.zones.hand) > self.card_limit:
+        while len(self.zones.hand.cards) > self.card_limit:
             to_delete = random.choice(self.zones.hand)
             self.zones.discard(to_delete)
 
@@ -51,7 +51,7 @@ class Strategy(Enum):
 
 class RugPlayer(Player):
     def __init__(self, zone, game_state):
-        Player.__init__(zone, game_state)
+        Player.__init__(self, zone, game_state)
         self.strategy = Strategy.RAMP
 
     def precombat_main_phase(self):
@@ -82,7 +82,7 @@ class RugPlayer(Player):
         }
 
         top_card = ["", 99]
-        for c in self.zones.hand:
+        for c in self.zones.hand.cards:
             x = priority.get(c[0])
             if x:
                 if x < top_card[1]:
@@ -91,19 +91,21 @@ class RugPlayer(Player):
         return top_card[0]
 
     def cast_spells(self):
-        pass
+        result = 0
+        spells_cast = self.zones.find_spells_ready_to_cast()
+        return result
 
     def set_strategy(self):
         lands_on_bf = self.zones.battlefield.lands_count
         if lands_on_bf >= 7:
-            if "Scapeshift" in self.zones.battlefield:
+            if "Scapeshift" in self.zones.hand.cards:
                 self.strategy = Strategy.CAST_SS
             else:
                 self.strategy = Strategy.DIG_SS
         else:
-            potencial_lands = lands_on_bf + self.zones.hand.count_land_potencial
+            potencial_lands = lands_on_bf + self.zones.hand.countType("Land")
             if potencial_lands >= 7:
-                if "Scapeshift" in self.zones.battlefield:
+                if "Scapeshift" in self.zones.hand.cards:
                     self.strategy = Strategy.RAMP
                 else:
                     self.strategy = Strategy.DIG_SS
@@ -111,7 +113,7 @@ class RugPlayer(Player):
                 if self.ramp_in_hand():
                     self.strategy = Strategy.RAMP
                 else:
-                    if "Scapeshift" in self.zones.battlefield:
+                    if "Scapeshift" in self.zones.hand.cards:
                         self.strategy = Strategy.DIG_RAMP
                     else:
                         self.strategy = Strategy.DIG_SS

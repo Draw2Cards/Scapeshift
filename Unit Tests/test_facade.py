@@ -3,7 +3,7 @@ from abc import ABC
 from game.zone import ZonesManager, Zone
 from cards.card import Card
 from game.game_state import GameState, Outcome
-
+from zones.hand import Hand
 
 class FakeShufflingZonesManager(ZonesManager, ABC):
     def __init__(self, library, hand, battlefield, graveyard, exile):
@@ -45,19 +45,19 @@ class TestFacade(unittest.TestCase):
     # draw
     def test__draw__sufficient_library_card_number__cards_removed_from_library(self):
         library = ["Card1", "Card2"]
-        facade = SimpleZoneDraw(library, [], None)
+        facade = SimpleZoneDraw(library, Hand(), None)
         facade.draw(2)
         self.assertEqual(facade.library, [])
 
     def test__draw__sufficient_library_card_number__cards_added_to_hand(self):
-        facade = SimpleZoneDraw(["Card1", "Card2"], [], None)
+        facade = SimpleZoneDraw(["Card1", "Card2"], Hand(), None)
         facade.draw(2)
-        self.assertEqual(facade.hand, ["Card1", "Card2"])
+        self.assertEqual(facade.hand.cards, ["Card1", "Card2"])
 
     def test__draw__insufficient_library_card_number__outcome_changed_to_lose(self):
         game_state = GameState()
-        library = ["Card1"]
-        facade = SimpleZoneDraw(library, [], game_state)
+        library = [Card()]
+        facade = SimpleZoneDraw(library, Hand(), game_state)
         facade.draw(2)
         self.assertEqual(game_state.outcome, Outcome.LOSE)
 
@@ -82,14 +82,14 @@ class TestFacade(unittest.TestCase):
     # tutor_by_name
     def test__tutor__card_in_library__moved_to_hand(self):
         card1 = Card("Card1")
-        facade = SimpleZoneTutor([card1], [], [], [], [])
+        facade = SimpleZoneTutor([card1], Hand(), [], [], [])
         facade.tutor_by_name(card1.name)
-        self.assertEqual(facade.hand, [card1])
+        self.assertEqual(facade.hand.cards, [card1])
 
     def test__tutor__card_in_library__removed_from_library(self):
         card1_name = "Card1"
         card1 = Card(card1_name)
-        facade = SimpleZoneTutor([card1], [], [], [], [])
+        facade = SimpleZoneTutor([card1], Hand(), [], [], [])
         facade.tutor_by_name(card1_name)
         self.assertEqual(facade.library, [])
 
@@ -100,19 +100,19 @@ class TestFacade(unittest.TestCase):
     def test__tutor_by_name__card_in_library__shuffled_library(self):
         card1_name = "Card1"
         card1 = Card(card1_name)
-        facade = FakeShufflingZonesManager([card1], [], [], [], [])
+        facade = FakeShufflingZonesManager([card1], Hand(), [], [], [])
         facade.tutor_by_name(card1_name)
         self.assertTrue(facade.library_shuffled)
 
     def test__tutor_by_name__card_not_in_library__shuffled_library(self):
         card1_name = "Card1"
-        facade = FakeShufflingZonesManager([], [], [], [], [])
+        facade = FakeShufflingZonesManager([], Hand(), [], [], [])
         facade.tutor_by_name(card1_name)
         self.assertTrue(facade.library_shuffled)
 
     def test__tutor_by_name__looking_in_graveyard__no_shuffling(self):
         card1_name = "Card1"
-        facade = FakeShufflingZonesManager([], [], [], [], [])
+        facade = FakeShufflingZonesManager([], Hand(), [], [], [])
         facade.tutor_by_name(card1_name, Zone.GRAVEYARD, Zone.HAND)
         self.assertFalse(facade.library_shuffled)
 

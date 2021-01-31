@@ -5,7 +5,8 @@ from setup.database_manager import DatabaseManager
 from game.game import Game
 from game.player import Player, RugPlayer
 from game.zone import ZonesManager
-
+from zones.battlefield import Battlefield
+from zones.hand import Hand
 
 def main():
     db_manager = DatabaseManager()
@@ -21,7 +22,9 @@ def main():
             print('Card data: OK.')
             library = deck.to_library()
             game_state = GameState()
-            zones = ZonesManager(library, [], [], [], [], [], game_state)
+            bf = Battlefield()
+            hand = Hand()
+            zones = ZonesManager(library, hand, bf, [], [], [], game_state)
             # player = Player(zones, game_state)
             player = RugPlayer(zones, game_state)
             game = Game(zones, game_state, player)

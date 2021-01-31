@@ -6,6 +6,7 @@ from game.game_state import GameState
 from game.phase import PhaseBeginning, Phase, PhasePrecombatMain
 from game.step import StepUntap, StepDraw
 from game.zone import ZonesManager
+from zones.battlefield import Battlefield
 
 
 class OnlyUntap(Game):
@@ -64,17 +65,21 @@ class DrawZone(ZonesManager, ABC):
 
 class TestGame(unittest.TestCase):
     def test__untap_step__all_card_tapped__no_tapped_cards(self):
+        battlefield = Battlefield()
         permanent = Permanent("Card1")
         permanent.untapped = False
-        zones = BattlefieldZone([permanent])
+        battlefield.permanents.append(permanent)
+        zones = BattlefieldZone(battlefield)
         game = OnlyUntap(zones, GameState())
         game.turn()
         self.assertTrue(permanent.untapped)
 
     def test__untap_step__card_that_never_untaps__card_stay_untapped(self):
+        battlefield = Battlefield()
         permanent = UntappablePermanent("Card1")
         permanent.untapped = False
-        zones = BattlefieldZone([permanent])
+        battlefield.permanents.append(permanent)
+        zones = BattlefieldZone(battlefield)
         game = OnlyUntap(zones, GameState())
         game.turn()
         self.assertFalse(permanent.untapped)

@@ -36,10 +36,8 @@ class StepDraw(Step):
         self.game_state = game_state
 
     def run(self):
-        card = []
         if self.game_state.turn_counter is not 1 or not self.game_state.first:
-            card = self.zones.draw()
-        Logger.draw_step(card)
+            self.zones.draw()
 
 
 class StepCombat(Step):

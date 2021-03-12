@@ -1,5 +1,7 @@
 import random
 from enum import Enum
+
+from game.zone import Zone
 from logger import Logger
 
 
@@ -55,6 +57,7 @@ class RugPlayer(Player):
 
     def precombat_main_phase(self):
         self.set_strategy()
+        Logger.selected_strategy(self.strategy)
         while True:
             if not self.game_state.land_played:
                 self.play_land()
@@ -70,15 +73,15 @@ class RugPlayer(Player):
 
     def pick_land(self):
         priority = {
-            "Misty Rainforest": 0,
-            "Breeding Pool": 1,
-            "Snow-Covered Island": 2,
-            "Snow-Covered Forest": 3,
-            "Mystic Sanctuary": 4,
-            "Steam Vents": 5,
-            "Stomping Ground": 6,
-            "Snow-Covered Mountain": 7,
-            "Valakut, the Molten Pinnacle": 8
+            "Misty Rainforest": 1,
+            "Breeding Pool": 2,
+            "Snow-Covered Island": 3,
+            "Snow-Covered Forest": 4,
+            "Mystic Sanctuary": 5,
+            "Steam Vents": 6,
+            "Stomping Ground": 7,
+            "Snow-Covered Mountain": 8,
+            "Valakut, the Molten Pinnacle": 9
         }
 
         top_card = ["", 99]
@@ -92,11 +95,18 @@ class RugPlayer(Player):
 
     def cast_spells(self):
         result = 0
-        spells_cast = self.zones.find_spells_ready_to_cast()
+        spells_rdy_cast = self.zones.find_spells_ready_to_cast()
+        if spells_rdy_cast:
+            if self.strategy == Strategy.RAMP:
+                result = self.cast_ramp_spell(spells_rdy_cast)
+            elif self.strategy == Strategy.DIG_RAMP or self.strategy == Strategy.DIG_SS:
+                result = self.cast_dig_spell(spells_rdy_cast)
+            else:
+                result = self.cast_ss(spells_rdy_cast)
         return result
 
     def set_strategy(self):
-        lands_on_bf = self.zones.battlefield.lands_count
+        lands_on_bf = self.zones.battlefield.count_lands()
         if lands_on_bf >= 7:
             if "Scapeshift" in self.zones.hand.cards:
                 self.strategy = Strategy.CAST_SS
@@ -126,3 +136,59 @@ class RugPlayer(Player):
             "Uro, Titan of Nature's Wrath"
         }
         return self.zones.hand.find(ramp_spells)
+
+    def cast_ramp_spell(self, spells_rdy_cast):
+
+        result = 0;
+        priority = {
+            "Uro, Titan of Nature's Wrath": 0,
+            "Search for Tomorrow": 1,
+            "Sakura-Tribe Elder": 2,
+            "Growth Spiral": 3,
+        }
+
+        top_card = ["", 99]
+        for c in spells_rdy_cast:
+            x = priority.get(c[0])
+            if x:
+                if x < top_card[1]:
+                    top_card = [c, x]
+
+        if top_card[0]:
+            self.cast(top_card[0])
+            result = 1
+
+        return result
+
+    def cast_dig_spell(self, spells_rdy_cast):
+        return 0
+
+    def cast_ss(self, spells_rdy_cast):
+        return 0
+
+    def cast(self, card):
+        Logger.card_played(card)
+        self.zones.tap_lands(card[1])
+        if card[0] == 'Uro, Titan of Nature\'s Wrath':
+            self.zones.draw()
+            self.play_land()
+        elif card[0] == 'Search for Tomorrow':
+            card = self.zones.tutor_by_name("Snow-Covered Forest", Zone.LIBRARY, Zone.BATTLEFIELD)
+            if not card:
+                card = self.zones.tutor_by_name("Snow-Covered Island", Zone.LIBRARY, Zone.BATTLEFIELD)
+            if not card:
+                card = self.zones.tutor_by_name("Snow-Covered Mountain", Zone.LIBRARY, Zone.BATTLEFIELD)
+            if card:
+                Logger.card_played(card)
+        elif card[0] == 'Sakura-Tribe Elder':
+            card = self.zones.tutor_by_name("Snow-Covered Forest", Zone.LIBRARY, Zone.BATTLEFIELD)
+            if not card:
+                card = self.zones.tutor_by_name("Snow-Covered Island", Zone.LIBRARY, Zone.BATTLEFIELD)
+            if not card:
+                card = self.zones.tutor_by_name("Snow-Covered Mountain", Zone.LIBRARY, Zone.BATTLEFIELD)
+            if card:
+                Logger.card_played(card)
+                self.zones.battlefield.tap(card)
+        elif card[0] == 'Growth Spiral':
+            self.zones.draw()
+            self.play_land()

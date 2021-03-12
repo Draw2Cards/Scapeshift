@@ -25,3 +25,7 @@ class Logger:
     @staticmethod
     def card_played(card):
         print("   Card played: ", card[0])
+
+    @staticmethod
+    def selected_strategy(strategy):
+        print("    Selected strategy: ", strategy)

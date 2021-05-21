@@ -50,14 +50,13 @@ class TestFacade(unittest.TestCase):
         self.assertEqual(facade.library, [])
 
     def test__draw__sufficient_library_card_number__cards_added_to_hand(self):
-        facade = SimpleZoneDraw(["Card1", "Card2"], Hand(), None)
+        facade = SimpleZoneDraw([("Card1",), ("Card2",)], Hand(), None)
         facade.draw(2)
-        self.assertEqual(facade.hand.cards, ["Card1", "Card2"])
+        self.assertEqual(facade.hand.cards, [("Card1",), ("Card2",)])
 
     def test__draw__insufficient_library_card_number__outcome_changed_to_lose(self):
         game_state = GameState()
-        library = [Card()]
-        facade = SimpleZoneDraw(library, Hand(), game_state)
+        facade = SimpleZoneDraw([("Card1",)], Hand(), game_state)
         facade.draw(2)
         self.assertEqual(game_state.outcome, Outcome.LOSE)
 
@@ -83,16 +82,15 @@ class TestFacade(unittest.TestCase):
 
     # tutor_by_name
     def test__tutor__card_in_library__moved_to_hand(self):
-        card1 = Card("Card1")
+        card1 = ("Card1",)
         facade = SimpleZoneTutor([card1], Hand(), [], [], [])
-        facade.tutor_by_name(card1.name)
+        facade.tutor_by_name(card1[0])
         self.assertEqual(facade.hand.cards, [card1])
 
     def test__tutor__card_in_library__removed_from_library(self):
-        card1_name = "Card1"
-        card1 = Card(card1_name)
+        card1 = ("Card1",)
         facade = SimpleZoneTutor([card1], Hand(), [], [], [])
-        facade.tutor_by_name(card1_name)
+        facade.tutor_by_name(card1[0])
         self.assertEqual(facade.library, [])
 
     def test__tutor_by_name__using_method_to_add_to_library__rises_error(self):
@@ -100,10 +98,9 @@ class TestFacade(unittest.TestCase):
         self.assertRaises(SystemError, facade.tutor_by_name, "Card1", Zone.GRAVEYARD, Zone.LIBRARY)
 
     def test__tutor_by_name__card_in_library__shuffled_library(self):
-        card1_name = "Card1"
-        card1 = Card(card1_name)
+        card1 = ("Card1",)
         facade = FakeShufflingZonesManager([card1], Hand(), [], [], [])
-        facade.tutor_by_name(card1_name)
+        facade.tutor_by_name(card1[0])
         self.assertTrue(facade.library_shuffled)
 
     def test__tutor_by_name__card_not_in_library__shuffled_library(self):

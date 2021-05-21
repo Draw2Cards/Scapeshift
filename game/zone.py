@@ -123,8 +123,12 @@ class ZonesManager:
         # TODO
         pass
 
-    def find_spells_ready_to_cast(self):
-        return self.hand.find_spells_with_cmc_leq(self.battlefield.count_open_mana())
+    def find_spells_in_hand_ready_to_cast(self):
+        spells = []
+        for card in self.hand.find_spells_with_cmc_leq(self.battlefield.count_open_mana()):
+            if self.battlefield.can_cast(card):
+                spells.append(card)
+        return spells
 
     def tap_lands(self, cost):
         self.battlefield.tap_lands(cost)

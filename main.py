@@ -8,6 +8,7 @@ from game.zone import ZonesManager
 from zones.battlefield import Battlefield
 from zones.hand import Hand
 
+
 def main():
     db_manager = DatabaseManager()
     deck = Deck("D:\\scapeshift_02-04-2020.txt")

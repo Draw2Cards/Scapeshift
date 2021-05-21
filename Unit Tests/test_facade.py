@@ -5,6 +5,7 @@ from cards.card import Card
 from game.game_state import GameState, Outcome
 from zones.hand import Hand
 
+
 class FakeShufflingZonesManager(ZonesManager, ABC):
     def __init__(self, library, hand, battlefield, graveyard, exile):
         self.library = library
@@ -33,7 +34,7 @@ class SimpleZoneDiscard(ZonesManager, ABC):
 
 
 class SimpleZoneTutor(ZonesManager, ABC):
-    def __init__(self, library, hand, battlefield, graveyard, exile,):
+    def __init__(self, library, hand, battlefield, graveyard, exile, ):
         self.library = library
         self.hand = hand
         self.battlefield = battlefield

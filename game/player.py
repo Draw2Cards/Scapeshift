@@ -95,7 +95,7 @@ class RugPlayer(Player):
 
     def cast_spells(self):
         result = 0
-        spells_rdy_cast = self.zones.find_spells_ready_to_cast()
+        spells_rdy_cast = self.zones.find_spells_in_hand_ready_to_cast()
         if spells_rdy_cast:
             if self.strategy == Strategy.RAMP:
                 result = self.cast_ramp_spell(spells_rdy_cast)
@@ -139,7 +139,7 @@ class RugPlayer(Player):
 
     def cast_ramp_spell(self, spells_rdy_cast):
 
-        result = 0;
+        result = 0
         priority = {
             "Uro, Titan of Nature's Wrath": 0,
             "Search for Tomorrow": 1,

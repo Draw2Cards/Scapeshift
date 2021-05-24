@@ -55,3 +55,40 @@ class Battlefield:
                         available_mana.append("R")
                     else:
                         raise NotImplementedError(p.card[0] + ': Not Implemented!')
+
+    def get_fetches(self):
+        fetches = []
+        for p in self.permanents:
+            if "Land" in p.card[3]:
+                if p.card[0] == 'Flooded Strand':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Polluted Delta':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Bloodstained Mire':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Wooded Foothills':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Wooded Foothills':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Marsh Flats':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Scalding Tarn':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Verdant Catacombs':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Arid Mesa':
+                    fetches.append(p.card)
+                elif p.card[0] == 'Misty Rainforest':
+                    fetches.append(p.card)
+        return fetches
+
+    def get_cards(self):
+        result = []
+        for p in self.permanents:
+            result.append(p.card)
+        return result
+
+    def remove(self, card):
+        for p in self.permanents:
+            if p.card == card:
+                self.permanents.remove(p)

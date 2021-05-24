@@ -61,8 +61,9 @@ class RugPlayer(Player):
         while True:
             if not self.game_state.land_played:
                 self.play_land()
+            activated_abilities_count = self.activated_abilities()
             casted_spells_count = self.cast_spells()
-            if casted_spells_count == 0:
+            if casted_spells_count == 0 and activated_abilities_count == 0:
                 break
 
     def play_land(self):
@@ -103,6 +104,30 @@ class RugPlayer(Player):
                 result = self.cast_dig_spell(spells_rdy_cast)
             else:
                 result = self.cast_ss(spells_rdy_cast)
+        return result
+
+    def activated_abilities(self):
+        result = 0
+        result = self.use_fetches(self.zones.battlefield.get_fetches())
+        return result
+
+    def use_fetches(self, fetches):
+        result = 0
+        for f in fetches:
+            if f[0] == 'Misty Rainforest':
+                card = self.zones.tutor_by_name('Breeding Pool', Zone.LIBRARY, Zone.BATTLEFIELD)
+                if not card:
+                    card = self.zones.tutor_by_name('Snow-Covered Island', Zone.LIBRARY, Zone.BATTLEFIELD)
+                if not card:
+                    card = self.zones.tutor_by_name('Snow-Covered Forest', Zone.LIBRARY, Zone.BATTLEFIELD)
+                if not card:
+                    card = self.zones.tutor_by_name('Steam Vents', Zone.LIBRARY, Zone.BATTLEFIELD)
+                if not card:
+                    card = self.zones.tutor_by_name('Stomping Ground', Zone.LIBRARY, Zone.BATTLEFIELD)
+                if not card:
+                    raise NotImplementedError('Fetching failed!')
+                if card:
+                    self.zones.move_card(f, Zone.BATTLEFIELD, Zone.GRAVEYARD)
         return result
 
     def set_strategy(self):

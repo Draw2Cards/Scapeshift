@@ -28,7 +28,7 @@ class ZonesManager:
         elif enum == Zone.HAND:
             return self.hand.cards
         elif enum == Zone.BATTLEFIELD:
-            return self.battlefield.permanents
+            return self.battlefield.get_cards()
         elif enum == Zone.GRAVEYARD:
             return self.graveyard
         else:
@@ -64,11 +64,11 @@ class ZonesManager:
         for c in list_from:
             if card[0] == c[0]:
                 if enum_to == Zone.BATTLEFIELD:  # TODO IF enum_to is Zone.BATTLEFIELD convert to Permanent
-                    list_to.append(Permanent(card))
+                    self.battlefield.permanents.append(Permanent(card))
                 else:
                     list_to.append(card)
-                if enum_from == Zone.BATTLEFIELD: # TODO IF enum_to is Zone.BATTLEFIELD convert to Card
-                    list_to.append(card.card)
+                if enum_from == Zone.BATTLEFIELD:  # TODO IF enum_to is Zone.BATTLEFIELD convert to Card
+                    self.battlefield.remove(card)
                 else:
                     list_from.remove(card)
                 break
@@ -86,11 +86,11 @@ class ZonesManager:
         for card in list_from:
             if name == card[0]:
                 if enum_to == Zone.BATTLEFIELD:  # TODO IF enum_to is Zone.BATTLEFIELD convert to Permanent
-                    list_to.append(Permanent(card))
+                    self.battlefield.permanents.append(Permanent(card))
                 else:
                     list_to.append(card)
                 if enum_from == Zone.BATTLEFIELD: # TODO IF enum_to is Zone.BATTLEFIELD convert to Card
-                    list_to.append(card.card)
+                    self.battlefield.remove(card)
                 else:
                     list_from.remove(card)
                 result = card
